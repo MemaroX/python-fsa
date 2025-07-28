@@ -1,36 +1,83 @@
-# Finite State Automata
+# Python Finite State Automata (python-fsa)
 
-A small project demonstrating both deterministic and nondeterministic finite
-state machines.
+`python-fsa` is a Python library designed for the creation, manipulation, and visualization of Deterministic Finite Automata (DFAs) and Nondeterministic Finite Automata (NFAs). It provides a robust framework for defining state machines, processing input strings, and generating visual representations of the automata.
 
-![](assets/meme.png)
+## Features
 
-## Docs
+-   **DFA & NFA Implementation:** Core classes for defining and simulating both deterministic and nondeterministic finite automata.
+-   **Input Acceptance Testing:** Methods to check if a given input string is accepted by the defined automaton.
+-   **NFA to DFA Conversion:** Functionality to convert NFA instances into equivalent DFA representations.
+-   **Transducers:** Mutable transducers for step-by-step processing of input symbols.
+-   **Interactive FSM Creation (`fsm_creator.py`):** A command-line tool to guide users through the interactive definition of DFAs and NFAs, generating both JSON and DOT graph files.
+-   **Advanced CLI (`main3-0.py`):** A versatile command-line interface for loading FSMs from JSON or DOT files, performing interactive testing (including step-by-step execution), and generating visualizations.
+-   **DOT File Customization (`dot_customizer.py`):** A utility to programmatically modify and render DOT graph files, allowing for visual enhancements (e.g., highlighting initial states).
+-   **Visualization:** Integration with Graphviz to generate visual diagrams (PNG) of the created automata.
 
-https://python-fsa.rtfd.io/
+## Installation
 
-## Install
+`python-fsa` depends on `pygraphviz` for visualization, which in turn requires the Graphviz C library to be installed on your system. If you encounter issues with `pygraphviz` installation, ensure Graphviz is properly installed and its `dot` executable is in your system's PATH.
 
+1.  **Install Graphviz:** Download and install Graphviz from the [official website](https://graphviz.org/download/) and ensure it's added to your system's PATH.
+
+2.  **Install Python Dependencies:**
+
+    ```bash
+    pip install -r requirements.txt
+    pip install graphviz
+    ```
+
+3.  **Install `python-fsa` in Editable Mode (for development/CLI tools):**
+
+    ```bash
+    pip install -e .
+    ```
+
+## Usage
+
+### Interactive FSM Creation (`fsm_creator.py`)
+
+This tool guides you through defining a new DFA or NFA interactively. It generates a `.dot` file for visualization and a `.json` file for programmatic use.
+
+```bash
+python fsm_creator.py
 ```
-pip install python-fsa
+
+Follow the prompts to define your automaton. At the end, you'll have the option to launch `main3-0.py` to immediately test your newly created FSM.
+
+### Advanced FSM CLI (`main3-0.py`)
+
+This script allows you to load and test FSMs from various sources, including JSON files (created by `fsm_creator.py`) or DOT graph files.
+
+**Load from JSON and test:**
+
+```bash
+python main3-0.py --load-from my_fsm.json
 ```
 
-Python-fsa depends on graphviz and pygraphviz. In order to install graphviz,
-see [their documentation](https://github.com/pygraphviz/pygraphviz/blob/main/INSTALL.txt)
+**Load from DOT file and test:**
 
-## Examples
+```bash
+python main3-0.py --dot-file assets/dot_files/dfa_example.gv
+```
 
-### DFA Example
+Once in interactive mode, you can enter strings to test or type `step` for step-by-step execution.
 
-Consider the following DFA that recognises the language of words over the
-alphabet {0, 1} which contain an even number of 1s
+### DOT File Customization (`dot_customizer.py`)
 
-![](assets/dfa_example.svg)
+Modify and render existing DOT graph files. For example, to highlight the initial state:
 
-A DFA instance can be constructed:
+```bash
+python dot_customizer.py --input assets/dot_files/dfa_example.gv --output customized_dfa
+```
+
+This will create `customized_dfa.dot` and `customized_dfa.png` with the initial state colored red.
+
+### Library Usage (Examples)
+
+**DFA Example:**
 
 ```python
-from python_fsa.dfa import DFA
+from python_fsa import DFA
 
 a, b = "a", "b"
 
@@ -46,42 +93,20 @@ dfa = DFA(
     },
     final=(a,),
 )
+
+print(dfa.accepts((0, 1, 1, 0)))  # Output: True
+print(dfa.accepts((0, 0, 0, 1)))  # Output: False
 ```
 
-Words can then be accepted or rejected by calling `accepts`:
+**NFA Example:**
 
 ```python
-dfa.accepts((0, 0, 0, 1))  # False
-dfa.accepts((0, 1, 1, 0))  # True
-```
-
-Words can be given one at a time to a mutable transducer of the DFA:
-
-```python
-dfa_transducer = dfa.transducer()
-
-dfa_transducer.push(1)  # False
-dfa_transducer.push(0)  # False
-dfa_transducer.push(1)  # True
-dfa_transducer.push(0)  # True
-```
-
-### NFA Example
-
-Consider the following NFA that recognises the language of words over the
-alphabet {0, 1} whose second to last symbol is 1.
-
-![](assets/nfa_example.svg)
-
-An NFA instance can be constructed:
-
-```python
-from python_fsa.nfa import NFA
+from python_fsa import NFA
 
 a, b, c = "a", "b", "c"
 
 nfa = NFA(
-    alphabet=(1, 0),
+    alphabet=(0, 1),
     states=(a, b, c),
     initial=a,
     transitions={
@@ -92,32 +117,11 @@ nfa = NFA(
     },
     final=(c,),
 )
+
+print(nfa.accepts((0, 1, 1, 0)))  # Output: True
+print(nfa.accepts((0, 0, 0, 1)))  # Output: False
+
+# Convert NFA to DFA
+dfa_from_nfa = nfa.to_dfa()
+print(dfa_from_nfa.accepts((0, 1, 1, 0))) # Output: True
 ```
-
-Words can then be accepted or rejected by calling `accepts`:
-
-```python
-nfa.accepts((0, 1, 1, 0))  # True
-nfa.accepts((0, 0, 0, 1))  # False
-```
-
-This NFA can be converted to an equivalent DFA by calling `to_dfa`:
-
-```python
-dfa = nfa.to_dfa()
-```
-
-However, this will result in a DFA of type `DFA[T, frozenset[S]]` – as the
-states of the resulting DFA are from the powerset of NFA states. This can cause
-errors in writing the resulting DFA to dot-format.
-
-The `frozenset[S]` states can be squashed to strings by calling `dfa.squash()`,
-which stringifies and joins states in each `frozenset[S]`:
-
-```python
-dfa = nfa.to_dfa().squash()
-```
-
-Which produces the following DFA:
-
-![](assets/nfa_to_dfa_ex.svg)
