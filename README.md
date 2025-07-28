@@ -133,3 +133,15 @@ print(dfa_from_nfa.accepts((0, 1, 1, 0))) # Output: True
 ## Acknowledgements
 
 This project stands on the shoulders of giants. We extend our profound gratitude to **James Ansley** (GitHub: [James-Ansley](https://github.com/James-Ansley)) for his foundational work on the original `python-fsa` repository, which served as the initial inspiration and starting point for this enhanced endeavor. His elegant design principles laid the groundwork for the advanced capabilities now present.
+
+## Future Work: Pioneering the Next Generation of Automata Tools
+
+The journey of `python-fsa` is far from complete. We envision a future where the interaction with finite state machines is even more intuitive, powerful, and visually rich. Our roadmap includes, but is not limited to, the following ambitious endeavors:
+
+-   **Regular Expression Integration:** Develop seamless integration with regular expressions, allowing users to define automata directly from regex patterns and vice-versa. This would bridge the gap between theoretical language definition and practical automaton construction.
+-   **Minimization Algorithms:** Implement classic DFA minimization algorithms (e.g., Myhill-Nerode theorem, partition refinement) to optimize automata for efficiency and elegance.
+-   **Advanced Visualization Features:** Explore dynamic visualization capabilities, such as animating state transitions during input processing, or generating interactive web-based visualizations.
+-   **Formal Verification Tools:** Integrate tools for formal verification, enabling users to prove properties about their automata, such as equivalence or language inclusion.
+-   **Context-Free Grammar (CFG) Support:** Extend the library to support more complex language models, potentially including pushdown automata and context-free grammars.
+-   **Performance Optimization:** Continuously refine the underlying algorithms for enhanced performance, especially when dealing with very large or complex automata.
+-   **Web-Based Interface:** Investigate the development of a user-friendly web interface, allowing for visual FSM design, simulation, and analysis directly in a browser.
